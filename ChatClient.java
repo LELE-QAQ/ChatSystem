@@ -1,5 +1,6 @@
 import  java.awt.*;
 import  java.awt.event.*;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -17,6 +18,7 @@ class ClientFrame extends Frame{
 	TextField textField = new TextField(30);
 	TextArea tArea = new TextArea("",20,20);
 	Socket socket = null;
+	DataOutputStream dataOutputStream = null;
 	public void launch() throws Exception, Exception
 	{
 		setLocation(200,200);
@@ -40,14 +42,23 @@ class ClientFrame extends Frame{
 	{
 		socket = new Socket("127.0.0.1", 8888);
 		System.out.println("Connect");
+		dataOutputStream = new DataOutputStream(socket.getOutputStream());
 	}
 	
 	private class TFListener implements ActionListener{
 		public void actionPerformed(ActionEvent e)
 		{
 			String string = textField.getText().trim();
-			tArea.setText(string);
+			tArea.setText(string); 
 			textField.setText("");
+			try {
+				dataOutputStream.writeUTF(string);
+				dataOutputStream.close();
+				
+				}catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			
 		}
 	}
 }
