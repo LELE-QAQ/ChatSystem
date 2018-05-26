@@ -1,14 +1,15 @@
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.sql.Date;
+import java.util.ArrayList;
 
 import com.sun.tools.classfile.Annotation.element_value;
 
 public class ChatServer {
-
 	public static void main(String[] args) {
 		new Server().connect();
 	}
@@ -16,6 +17,7 @@ public class ChatServer {
 
 class Server {
 	boolean started = false;
+	ArrayList<Client> clients = new ArrayList<Client>();
 
 	public void connect() {
 		Socket socket = null;
@@ -42,6 +44,7 @@ class Server {
 				System.out.println("A client connected");
 				Client client = new Client(socket);
 				new Thread(client).start();
+				clients.add(client);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -53,12 +56,22 @@ class Server {
 		private Socket socket;
 		private DataInputStream dataInputStream = null;
 		private boolean bConnect = false;
+		private DataOutputStream dataOutputStream = null;
 
 		public Client(Socket socket) {
 			this.socket = socket;
 			try {
 				bConnect = true;
 				dataInputStream = new DataInputStream(socket.getInputStream());
+				dataOutputStream = new DataOutputStream(socket.getOutputStream());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		public void send(String string) {
+			try {
+				dataOutputStream.writeUTF(string);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -70,8 +83,12 @@ class Server {
 				while (bConnect) {
 					String string = dataInputStream.readUTF();
 					System.out.println(string);
+					for (int i = 0; i < clients.size(); i++) {
+						Client client = clients.get(i);
+						client.send(string);
+					}
 				}
-				// dataInputStream.close();y
+				// dataInputStream.close();
 
 			} catch (EOFException e) {
 				System.out.println("client close");
@@ -80,6 +97,9 @@ class Server {
 			} finally {
 				try {
 					if (dataInputStream != null) {
+						dataInputStream.close();
+					}
+					if (dataOutputStream != null) {
 						dataInputStream.close();
 					}
 					if (socket != null) {
