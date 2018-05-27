@@ -31,7 +31,6 @@ class Server {
 			e.printStackTrace();
 		}
 		try
-
 		{
 			started = true;
 			while (started) {

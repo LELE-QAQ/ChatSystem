@@ -23,10 +23,10 @@ class ClientFrame extends Frame {
 	Frame frame = new Frame("ChatClient");
 	TextField textField = new TextField(30);
 	TextArea tArea = new TextArea("", 20, 20);
-	Socket socket = null;
-	DataOutputStream dataOutputStream = null;
-	DataInputStream dataInputStream = null;
-	boolean bConnect = false;
+	private Socket socket = null;
+	private DataOutputStream dataOutputStream = null;
+	private DataInputStream dataInputStream = null;
+	private boolean bConnect = false;
 
 	public void launch() {
 		setLocation(200, 200);
