@@ -1,13 +1,9 @@
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
-import java.sql.Date;
 import java.util.ArrayList;
-
-import com.sun.tools.classfile.Annotation.element_value;
 
 public class ChatServer {
 	public static void main(String[] args) {
@@ -17,11 +13,11 @@ public class ChatServer {
 
 class Server {
 	boolean started = false;
+	boolean bConnect = false;
 	ArrayList<Client> clients = new ArrayList<Client>();
 
 	public void connect() {
 		Socket socket = null;
-		DataInputStream dataInputStream = null;
 		ServerSocket serverSocket = null;
 		try {
 
@@ -39,7 +35,6 @@ class Server {
 		{
 			started = true;
 			while (started) {
-				boolean bConnect = false;
 				socket = serverSocket.accept();
 				System.out.println("A client connected");
 				Client client = new Client(socket);
@@ -48,6 +43,12 @@ class Server {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				serverSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -83,10 +84,18 @@ class Server {
 				while (bConnect) {
 					String string = dataInputStream.readUTF();
 					System.out.println(string);
+
 					for (int i = 0; i < clients.size(); i++) {
 						Client client = clients.get(i);
 						client.send(string);
 					}
+					/*
+					 * for(Iterator<Client> iterator = clients.iterator();iterator.hasNext();) {
+					 * Client client = iterator.next(); client.send(string); }
+					 * 
+					 * Iterator< Client> iterator = clients.iterator(); while(iterator.hasNext()) {
+					 * Client client = iterator.next(); client.send(string); }
+					 */
 				}
 				// dataInputStream.close();
 

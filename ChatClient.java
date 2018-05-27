@@ -64,6 +64,7 @@ class ClientFrame extends Frame {
 	public void disconnect() {
 		try {
 			dataOutputStream.close();
+			dataInputStream.close();
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -73,8 +74,8 @@ class ClientFrame extends Frame {
 	private class TFListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String string = textField.getText().trim();
-			tArea.setText(string);
-			// textField.setText("");
+			// tArea.setText(string);
+			textField.setText("");
 			try {
 				dataOutputStream.writeUTF(string);
 				dataOutputStream.flush();
@@ -95,7 +96,7 @@ class ClientFrame extends Frame {
 					// System.out.println(string);
 				}
 			} catch (SocketException e) {
-				System.out.println("socket close");
+				System.out.println("client close ,bye...");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
